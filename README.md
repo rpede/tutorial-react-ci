@@ -1,12 +1,13 @@
 # React CI Tutorial
 
-This tutorial will let you build Continuous Integration (CI) workflow for React.
+This tutorial will let you build a Continuous Integration (CI) workflow for
+frontend app using React.
 The resulting setup will be suitable for [GitHub Flow](https://githubflow.github.io/).
 
 This repository contains the application code you will build the CI workflow
 around.
-The sample application in this repository is written in TypeScript and uses
-Vite to build.
+The sample application in this repository is written in TypeScript and uses Vite
+to build.
 
 In this tutorial you will:
 
@@ -23,15 +24,15 @@ In this tutorial you will:
 ![Use this template screenshot](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp)
 
 3. Click "Create repository from template"
-4. Clone the repository following [these instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-5. Open your local clone in WebStorm or other editor
+4. Clone the repository following the instructions [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+5. Open your local clone in WebStorm or another editor
 
 ## Initial workflow
 
-To start things of, let's create a new workflow.
+To start things off, let's create a new workflow.
 
-Create a new file `.github/workflows/ci.yml` by right-clicking on project
-folder in **Project** panel.
+Create a new file `.github/workflows/ci.yml` by right-clicking on project folder
+in **Project** panel.
 Then _New_ -> _File_ and type the path.
 
 ![Adding ci.yml file](./docs/add-ci_yml.png)
@@ -55,14 +56,14 @@ jobs:
         run: echo "Hello world"
 ```
 
-The YAML code is just a simple skeleton workflow with a single step that
-outputs "Hello world".
+The YAML code is just a simple skeleton workflow with a single step that outputs
+"Hello world".
 
 The workflow will execute on push and pull-requests to **main** branch.
 
-For now we will commit directly to **main** branch.
-Later on branch protection will be added such that changes to **main** can
-only happend through pull-requests.
+For now, we will commit directly to **main** branch.
+Later on, branch protection will be added such that changes to **main** can only
+happen via pull-requests.
 
 In the terminal do:
 
@@ -75,11 +76,9 @@ git push
 ```
 
 Head over to the repository on GitHub and go to the "Actions" tab.
-
 Observe the workflow execute.
 
-You can also try to make a pull-requests which should also trigger the
-workflow.
+You can also try to make a pull-requests which should also trigger the workflow.
 
 **TODO** screenshot
 
@@ -94,16 +93,16 @@ Dependencies are defined in `package.json`.
 Dependencies are resolved to exact version using
 [semantic versioning](https://docs.npmjs.com/about-semantic-versioning) rules.
 
-If a dependency have a version `3.2.1` then follows:
+If a dependency has a version `3.2.1` then follows:
 
-| Number | Meaning       | Compatability                             |
+| Number | Meaning       | Compatibility                             |
 | ------ | ------------- | ----------------------------------------- |
 | `3`    | Major release | Changes that break backward compatibility |
 | `2`    | Minor release | Backward compatible new features          |
 | `1`    | Patch release | Backward compatible bug fixes             |
 
 Dependencies are often specified as `^1.1.0`, meaning latest release without
-breaking changes that is equal to or newer than the specified version.
+breaking changes that are equal to or newer than the specified version.
 
 Whe you run `npm install` it will attempt to resolve and install compatible
 version of all dependencies including dependencies of dependencies.
@@ -137,7 +136,7 @@ With:
   run: npm clean-install
 ```
 
-_NOTE: make sure the steps are correctly indented._
+_NOTE: make sure the snippet is correctly indented._
 
 The `actions/checkout` action will checkout the commit for which the workflows run.
 
@@ -153,8 +152,8 @@ Let's modify the workflow to do something actually useful.
 Here we will have it transpile (aka build) the TypeScript source code of the
 application to JavaScript.
 
-If it can't even build the code it means that someone deffinately screwed up
-and we would like to know as early as possible.
+If it can't even build the code, it means that someone definitely screwed up and
+we would like to know as early as possible.
 
 Just add the following step to `ci.yml`:
 
@@ -185,27 +184,31 @@ git push
 git checkout main
 ```
 
+*NOTE: lines starting with # are comments, not commands.*
+
 Create and merge a pull-requests from `fix/build` branch.
+Verify that you fixed the build. If not, commit another change to same branch.
+You can merge the pull-request once you've fixed the issue.
 
 ## 3. Lint
 
-Lets expand a bit and make sure the code is also up to standard.
+Let's expand a bit and make sure the code is also up to standard.
 We can do that with [eslint](https://eslint.org/).
 
 **eslint** is something called a [linter](<https://en.wikipedia.org/wiki/Lint_(software)>).
-They are tools that can analyse source code for potential errors.
+Linters are tools that can analyze source code for potential errors.
 They can also enforce stylistic rules for the source code to make sure the
 coding style is uniform, at least on the semantic level.
 
 ### Modify the project
 
-To use it we first need to add it to the project configuration.
+To use it, we first need to add it to the project configuration.
 Luckily there is a tool that automates most of it.
 
 In a terminal, do:
 
 ```sh
-npm init @eslint/config@latest                                                                                                                                                                                  ✔  system    NORMAL
+npm init @eslint/config@latest
 ```
 
 It will ask you a bunch of questions about your project.
@@ -234,7 +237,7 @@ eslint@9.x, globals, @eslint/js, typescript-eslint, eslint-plugin-react, @eslint
 ☕️Installing...
 ```
 
-Unfortunately there are a couple of small things that needs fixing.
+Unfortunately, there are a couple of small things that need fixing.
 
 In your `package.json` just about `dependencies`, add:
 
@@ -267,18 +270,20 @@ Simply add the following to `ci.yml`:
   run: npm run lint
 ```
 
+*NOTE: make sure it indentation is correct.*
+
 Commit and push!
 
 Oh, no. Another failure.
 
 Can you fix it?
 
-Create another feature branch with your fix using same procedure as above.
+Create another feature branch with your fix using same procedure as before.
 
 ## 4. Test
 
 You can only do so much with static code analysis.
-It can't tell if the code actually does what it is supposed to.
+It can't tell if the code actually do what it is supposed to.
 We need to execute the code for that.
 
 For that we need to write tests.
@@ -288,7 +293,7 @@ So, let's execute them as part of the workflow.
 ### Modify the project
 
 [Vite.js](https://vitejs.dev/) is used to build the app and there is a testing
-framework for it called [Vitest](https://vitest.dev/) that works with it.
+framework for it called [Vitest](https://vitest.dev/) that we will use.
 
 We can install it with:
 
@@ -296,7 +301,7 @@ We can install it with:
 npm install -D vitest
 ```
 
-Then add following under `scripts` in `package.json`:
+Then add the following under `scripts` in `package.json`:
 
 ```json
     "test": "vitest",
@@ -313,20 +318,23 @@ Simply add the following to `ci.yml`:
   run: npm run test
 ```
 
+*NOTE: make sure it indentation is correct.*
+
 Commit and push!
 
 Again, we have a failing workflow.
 
-Try and fix it.
+See if you can fix it!
 
 _Hint: look at `src/api.test.ts`_
 
 ## 5. Test coverage
 
-How can you tell if the tests have covered enough of the application code?
+Generally, each test only tests part of the application code.
+So, how can you tell if the tests have covered enough of the application code?
 
-To answer that question we need to generate a coverage report.
-It can tell you what lines of you application were executed by the tests and
+To answer that question, we need to generate a coverage report.
+It can tell you what lines of your application was executed by the tests and
 summarize it into a percentage.
 
 Output looks like this:
@@ -338,21 +346,23 @@ Output looks like this:
 |   🔵   | Functions  |     14.28% |           1 / 7 |
 |   🔵   | Branches   |     14.28% |           1 / 7 |
 
-Actually we get a couple of different numbers.
+Actually, we get a couple of different numbers.
 Here is a quick explanation.
 
-Lines
-: Should be self-explanatory
-Statements
-: They end with a `;`
-Functions
-: Also what it sounds like. Covers methods as well.
-Branches
-: Whenever the code can take different code paths, like when you have an `if` and `else`.
+<dl>
+<dt>Lines</dt>
+<dd>Should be self-explanatory</dd>
+<dt>Statements</dt>
+<dd>They end with a `;`</dd>
+<dt>Functions</dt>
+<dd>Also, what it sounds like. Covers methods as well.</dd>
+<dt>Branches</dt>
+<dd>Whenever the code can take different code paths, like when you have an `if` and `else`.</dd>
+</dl>
 
 ### Modify the project
 
-Coverage reports can fairly easily be enabled with **Vitest**
+The generation of coverage reports can fairly easily be enabled with **Vitest**.
 
 First install a package to support it.
 
@@ -381,8 +391,8 @@ export default defineConfig({
 });
 ```
 
-Basically it tells Vite+Vitest to generate a report and summery in JSON format
-and output a report even if there is a failure.
+Basically, it tells Vite+Vitest to generate a report and a summery in JSON
+format and output a report even if there is a failure.
 
 Create an alias for running tests with coverage report by adding the following
 to `script` section of `package.json`:
@@ -391,14 +401,16 @@ to `script` section of `package.json`:
     "test:coverage": "vitest --run --coverage.enabled true",
 ```
 
-The report will be saved to a file in `coverage` folder.
+The report will be saved to a file in the `coverage` folder.
 We don't need to commit the reports since they are generated from the code.
 Therefore, you should append `coverage` on a new line in the `.gitignore` file.
 
+**TODO** screenshot
+
 ### Change workflow
 
-Wouldn't it be cool if it showed the coverage when reviewing a merge request
-for a feature branch?
+Wouldn't it be cool if it showed the coverage when reviewing a pull-request for
+a feature branch?
 
 We can get the workflow to automatically make a comment with the coverage on
 pull-requests.
@@ -440,6 +452,8 @@ Then change the **Test** step between **Build** and **Lint** to:
 
 Stage the files and make sure the `coverage` folder isn't included.
 Then commit and push.
+
+What are the coverage percentage?
 
 ## 6. Branch protection
 
