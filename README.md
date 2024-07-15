@@ -24,8 +24,9 @@ In this tutorial you will:
 ![Use this template screenshot](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp)
 
 3. Click "Create repository from template"
-4. Clone the repository following the instructions [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-5. Open your local clone in WebStorm or another editor
+4. Type a repository name and click "Create Repository"
+5. Clone the repository following the instructions [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+6. Open your local clone in WebStorm or another editor
 
 ## Initial workflow
 
@@ -78,9 +79,14 @@ git push
 Head over to the repository on GitHub and go to the "Actions" tab.
 Observe the workflow execute.
 
-You can also try to make a pull-requests which should also trigger the workflow.
+![Showing the workflow run after completion](./docs/skeleton-workflow.png)
 
-**TODO** screenshot
+1. Click on the workflow run to see all the jobs in the workflow. In our case
+there is only one.
+2. Click on the job to see each step.
+3. Click on the "Hello world" step to view log.
+
+![Log for for "Hello world" step](./docs/hello-world-step.png)
 
 ## 1. Dependencies
 
@@ -101,13 +107,14 @@ If a dependency has a version `3.2.1` then follows:
 | `2`    | Minor release | Backward compatible new features          |
 | `1`    | Patch release | Backward compatible bug fixes             |
 
-Dependencies are often specified as `^1.1.0`, meaning latest release without
+Dependencies are often specified as `^3.2.1`, meaning latest release without
 breaking changes that are equal to or newer than the specified version.
+The resolved version could be `3.2.2` or `3.3.0`, but not `4.0.0`.
 
 Whe you run `npm install` it will attempt to resolve and install compatible
 version of all dependencies including dependencies of dependencies.
 
-The exact dependencies and all versions are stored in `package-lock.json`.
+The resolved dependencies and exact versions are stored in `package-lock.json`.
 
 Installing dependencies with `npm clean-install` will make sure only the exact
 versions of dependencies specified in `package-lock.json` is installed.
@@ -136,14 +143,18 @@ With:
   run: npm clean-install
 ```
 
-_NOTE: make sure the snippet is correctly indented._
+_NOTE: make sure the snippet is correctly indented like [this](https://gist.github.com/rpede/2bcc08d1be864f0d6620e57d7aa2897a)._
 
-The `actions/checkout` action will checkout the commit for which the workflows run.
+The `actions/checkout` action will checkout the commit for which the workflow is run.
 
 `actions/setup-node` makes the specified version of node.js (including npm)
 available.
 
-Commit and push your changes to make sure it works.
+When you made the changes, commit and push.
+Then head over to the repository on GitHub.
+Open "Actions" tab and verify that it worked.
+
+![Screenshot showing that "Install dependencies" succeeded](./docs/install-dependencies-step.png)
 
 ## 2. Build
 
@@ -162,6 +173,8 @@ Just add the following step to `ci.yml`:
   run: npm run build
 ```
 
+*NOTE: make sure it indentation is correct.*
+
 Commit and push to see it in action.
 
 ![Screenshot of failing workflow](./docs/build-failing.png)
@@ -173,13 +186,13 @@ Here are the GIT commands:
 
 ```sh
 git checkout -b fix/build
-# Look closely at the workflow output.
-# Can you find and fix the error?
+# Look closely at the workflow log.
+# Find and fix the error!
 git add -A
 git diff --cached
 # Review your staged changes.
 git commit -m 'Write a helpful commit message'
-git push
+git push --set-upstream origin fix/build
 # Make sure you are back on main branch afterwards
 git checkout main
 ```
@@ -189,6 +202,15 @@ git checkout main
 Create and merge a pull-requests from `fix/build` branch.
 Verify that you fixed the build. If not, commit another change to same branch.
 You can merge the pull-request once you've fixed the issue.
+
+After the pull-request have been merged, you should do:
+
+```sh
+git checkout main
+git pull
+```
+
+To make sure that your local version of main contains the merged changes.
 
 ## 3. Lint
 
@@ -280,6 +302,15 @@ Can you fix it?
 
 Create another feature branch with your fix using same procedure as before.
 
+**Important**
+
+Remember to update your local version of main branch when your are done.
+
+```sh
+git checkout main
+git pull
+```
+
 ## 4. Test
 
 You can only do so much with static code analysis.
@@ -301,32 +332,34 @@ We can install it with:
 npm install -D vitest
 ```
 
-Then add the following under `scripts` in `package.json`:
+The `-D` means that it is a development dependency.
+
+Then add the following in the `scripts` section in `package.json`:
 
 ```json
-    "test": "vitest",
+    "test": "vitest --run"
 ```
 
 It allows you to run the tests with the `npm run test` command.
+
+The sample application already contains a test.
+However it is out-commented.
+So, open `src/api.test.ts` and remove the `/*` and `*/`.
+
+Shortcut: <kbd>Ctrl</kbd> + <kbd>a</kbd> then <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>/</kbd>.
 
 ### Change workflow
 
 Simply add the following to `ci.yml`:
 
 ```yml
-- name: Lint
+- name: Test
   run: npm run test
 ```
 
 *NOTE: make sure it indentation is correct.*
 
 Commit and push!
-
-Again, we have a failing workflow.
-
-See if you can fix it!
-
-_Hint: look at `src/api.test.ts`_
 
 ## 5. Test coverage
 
@@ -367,7 +400,7 @@ The generation of coverage reports can fairly easily be enabled with **Vitest**.
 First install a package to support it.
 
 ```sh
-npm i -D @vitest/coverage-v8
+npm install -D @vitest/coverage-v8
 ```
 
 Next, change `vite.config.js` to:
@@ -405,8 +438,6 @@ The report will be saved to a file in the `coverage` folder.
 We don't need to commit the reports since they are generated from the code.
 Therefore, you should append `coverage` on a new line in the `.gitignore` file.
 
-**TODO** screenshot
-
 ### Change workflow
 
 Wouldn't it be cool if it showed the coverage when reviewing a pull-request for
@@ -435,7 +466,7 @@ permissions:
   pull-requests: write
 ```
 
-Then change the **Test** step between **Build** and **Lint** to:
+Then change the **Test** step to:
 
 ```yml
 - name: Test
@@ -450,9 +481,16 @@ Then change the **Test** step between **Build** and **Lint** to:
     json-final-path: "./coverage/coverage-final.json"
 ```
 
-Stage the files and make sure the `coverage` folder isn't included.
-Then commit and push.
+Stage the files (`git add -A`) and make sure that files the `coverage` folder
+isn't included (`git diff --cached`).
 
+If you see `coverage/coverage-final.json` or `coverage/coverage-summary.json` it
+means that you got something wrong with `.gitignore` file.
+You can unstage a file with `git restore --staged <file>`.
+
+When done, commit and push.
+
+Wait for the workflow to complete.
 What are the coverage percentage?
 
 ## 6. Branch protection
@@ -463,9 +501,9 @@ Click the green "New ruleset" button.
 
 Configure as shown in the screenshot.
 
-![Screenshot of branch protection rules](docs/branch_protection.png)
+![Screenshot of branch protection rules](docs/branch-protection.png)
 
-Click "Save changes".
+Click "Create".
 
 Now all changes to the **main** branch have to be done with a pull-request.
 The pull-request can't be merged before the CI workflow we build have succeeded.
@@ -478,10 +516,10 @@ approved by other team members or the code owner before it can be merged.
 You have now build a reasonable CI workflow for a React frontend application.
 
 The general concepts applies for other tech-stacks as well, but the way it is
-set up will be different.
+set up will be a bit different.
 
 It is common to also have a workflow to automate deploying the application.
 That will be an exercise for later.
 
 [Here](https://gist.github.com/rpede/d9ceade1eca00e4b3bc46141693648e2) are the
-main files that we changes, just for reference.
+main files that we changed, just for reference.
