@@ -25,7 +25,7 @@ In this tutorial you will:
 
 3. Click "Create repository from template"
 4. Type a repository name and click "Create Repository"
-5. Clone the repository following the instructions [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+5. Make a local clone the repository following the instructions [here](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
 6. Open your local clone in WebStorm or another editor
 
 ## Initial workflow
@@ -82,11 +82,11 @@ Observe the workflow execute.
 ![Showing the workflow run after completion](./docs/skeleton-workflow.png)
 
 1. Click on the workflow run to see all the jobs in the workflow. In our case
-there is only one.
+   there is only one.
 2. Click on the job to see each step.
 3. Click on the "Hello world" step to view log.
 
-![Log for for "Hello world" step](./docs/hello-world-step.png)
+![Log for "Hello world" step](./docs/hello-world-step.png)
 
 ## 1. Dependencies
 
@@ -111,7 +111,7 @@ Dependencies are often specified as `^3.2.1`, meaning latest release without
 breaking changes that are equal to or newer than the specified version.
 The resolved version could be `3.2.2` or `3.3.0`, but not `4.0.0`.
 
-Whe you run `npm install` it will attempt to resolve and install compatible
+When you run `npm install` it will attempt to resolve and install compatible
 version of all dependencies including dependencies of dependencies.
 
 The resolved dependencies and exact versions are stored in `package-lock.json`.
@@ -150,7 +150,7 @@ The `actions/checkout` action will checkout the commit for which the workflow is
 `actions/setup-node` makes the specified version of node.js (including npm)
 available.
 
-When you made the changes, commit and push.
+After you've made the changes, commit and push.
 Then head over to the repository on GitHub.
 Open "Actions" tab and verify that it worked.
 
@@ -163,7 +163,7 @@ Let's modify the workflow to do something actually useful.
 Here we will have it transpile (aka build) the TypeScript source code of the
 application to JavaScript.
 
-If it can't even build the code, it means that someone definitely screwed up and
+If it can't even build the code, it means that someone definitely screwed up, and
 we would like to know as early as possible.
 
 Just add the following step to `ci.yml`:
@@ -173,7 +173,7 @@ Just add the following step to `ci.yml`:
   run: npm run build
 ```
 
-*NOTE: make sure it indentation is correct.*
+_NOTE: make sure the indentation is correct._
 
 Commit and push to see it in action.
 
@@ -182,7 +182,7 @@ Commit and push to see it in action.
 Oh snap, the build is broken.
 
 Create a feature branch and see if you can fix it.
-Here are the GIT commands:
+Here are the Git commands:
 
 ```sh
 git checkout -b fix/build
@@ -197,10 +197,11 @@ git push --set-upstream origin fix/build
 git checkout main
 ```
 
-*NOTE: lines starting with # are comments, not commands.*
+_NOTE: lines starting with # are comments, not commands._
 
-Create and merge a pull-requests from `fix/build` branch.
-Verify that you fixed the build. If not, commit another change to same branch.
+Create then merge a pull-requests from `fix/build` branch.
+Verify that you fixed the build by observing the workflow log.
+If not, commit and push another change to same branch.
 You can merge the pull-request once you've fixed the issue.
 
 After the pull-request have been merged, you should do:
@@ -220,14 +221,14 @@ We can do that with [eslint](https://eslint.org/).
 **eslint** is something called a [linter](<https://en.wikipedia.org/wiki/Lint_(software)>).
 Linters are tools that can analyze source code for potential errors.
 They can also enforce stylistic rules for the source code to make sure the
-coding style is uniform, at least on the semantic level.
+coding style is uniform.
 
 ### Modify the project
 
-To use it, we first need to add it to the project configuration.
+To use eslintt, we first need to add it to the project configuration.
 Luckily there is a tool that automates most of it.
 
-In a terminal, do:
+In a terminal within your IDE, do:
 
 ```sh
 npm init @eslint/config@latest
@@ -261,7 +262,7 @@ eslint@9.x, globals, @eslint/js, typescript-eslint, eslint-plugin-react, @eslint
 
 Unfortunately, there are a couple of small things that need fixing.
 
-In your `package.json` just about `dependencies`, add:
+In your `package.json` just above `dependencies`, add:
 
 ```json
   "overrides": {
@@ -292,19 +293,18 @@ Simply add the following to `ci.yml`:
   run: npm run lint
 ```
 
-*NOTE: make sure it indentation is correct.*
+_NOTE: make sure the indentation is correct._
 
 Commit and push!
 
 Oh, no. Another failure.
-
 Can you fix it?
 
 Create another feature branch with your fix using same procedure as before.
 
 **Important**
 
-Remember to update your local version of main branch when your are done.
+Remember to update your local version of main branch when you are done.
 
 ```sh
 git checkout main
@@ -314,7 +314,7 @@ git pull
 ## 4. Test
 
 You can only do so much with static code analysis.
-It can't tell if the code actually do what it is supposed to.
+It can't tell if the code actually does what it is supposed to.
 We need to execute the code for that.
 
 For that we need to write tests.
@@ -343,7 +343,7 @@ Then add the following in the `scripts` section in `package.json`:
 It allows you to run the tests with the `npm run test` command.
 
 The sample application already contains a test.
-However it is out-commented.
+However, it is out-commented.
 So, open `src/api.test.ts` and remove the `/*` and `*/`.
 
 Shortcut: <kbd>Ctrl</kbd> + <kbd>a</kbd> then <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>/</kbd>.
@@ -357,14 +357,15 @@ Simply add the following to `ci.yml`:
   run: npm run test
 ```
 
-*NOTE: make sure it indentation is correct.*
+_NOTE: make sure the indentation is correct._
 
 Commit and push!
 
 ## 5. Test coverage
 
 Generally, each test only tests part of the application code.
-So, how can you tell if the tests have covered enough of the application code?
+So, how can you tell if your tests combined have covered enough of the
+application code?
 
 To answer that question, we need to generate a coverage report.
 It can tell you what lines of your application was executed by the tests and
@@ -388,7 +389,7 @@ Here is a quick explanation.
 <dt>Statements</dt>
 <dd>They end with a `;`</dd>
 <dt>Functions</dt>
-<dd>Also, what it sounds like. Covers methods as well.</dd>
+<dd>Also, what it sounds like. Methods count as functions.</dd>
 <dt>Branches</dt>
 <dd>Whenever the code can take different code paths, like when you have an `if` and `else`.</dd>
 </dl>
@@ -434,9 +435,9 @@ to `script` section of `package.json`:
     "test:coverage": "vitest --run --coverage.enabled true",
 ```
 
-The report will be saved to a file in the `coverage` folder.
+The report will be saved to a file in the `coverage/` folder.
 We don't need to commit the reports since they are generated from the code.
-Therefore, you should append `coverage` on a new line in the `.gitignore` file.
+Therefore, you should append `coverage/` on a new line in the `.gitignore` file.
 
 ### Change workflow
 
@@ -481,8 +482,8 @@ Then change the **Test** step to:
     json-final-path: "./coverage/coverage-final.json"
 ```
 
-Stage the files (`git add -A`) and make sure that files the `coverage` folder
-isn't included (`git diff --cached`).
+Stage the files (`git add -A`) and make sure that the files the `coverage`
+folder isn't included (`git diff --cached`).
 
 If you see `coverage/coverage-final.json` or `coverage/coverage-summary.json` it
 means that you got something wrong with `.gitignore` file.
@@ -513,10 +514,10 @@ approved by other team members or the code owner before it can be merged.
 
 ## Closing thoughts
 
-You have now build a reasonable CI workflow for a React frontend application.
+You have now built a reasonable CI workflow for a React frontend application.
 
-The general concepts applies for other tech-stacks as well, but the way it is
-set up will be a bit different.
+The general concepts will apply for other tech-stacks as well.
+But the way it is set up will be a bit different.
 
 It is common to also have a workflow to automate deploying the application.
 That will be an exercise for later.
