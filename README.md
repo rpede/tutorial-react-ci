@@ -270,7 +270,7 @@ In your `package.json` just above `dependencies`, add:
 
 ```json
   "overrides": {
-    "eslint": "^9.6.0"
+    "eslint": "^8.57.0"
   },
 ```
 
