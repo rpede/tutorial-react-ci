@@ -1,7 +1,7 @@
 # React CI Tutorial
 
 This tutorial will let you build a Continuous Integration (CI) workflow for
-frontend app using React.
+front-end app written React.
 The resulting setup will be suitable for [GitHub Flow](https://githubflow.github.io/).
 
 This repository contains the application code you will build the CI workflow
@@ -225,7 +225,7 @@ coding style is uniform.
 
 ### Modify the project
 
-To use eslintt, we first need to add it to the project configuration.
+To use eslint, we first need to add it to the project configuration.
 Luckily there is a tool that automates most of it.
 
 In a terminal within your IDE, do:
@@ -450,7 +450,7 @@ To make it happen we need to add two things.
 First permissions to make the comment.
 Second, we will use the [davelosert/vitest-coverage-report-action]() action to post it.
 
-In `.github/workflows/ci.yml`, after:
+In `.github/workflows/ci.yml`, right after:
 
 ```yml
 frontend_build_test_and_lint_job:
