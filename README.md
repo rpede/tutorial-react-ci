@@ -199,6 +199,10 @@ git checkout main
 
 _NOTE: lines starting with # are comments, not commands._
 
+**Important** Notice the branch name at the end of `git push --set-upstream
+origin fix/build`.
+It should match the name of the branch you are trying to push.
+
 Create then merge a pull-requests from `fix/build` branch.
 Verify that you fixed the build by observing the workflow log.
 If not, commit and push another change to same branch.
@@ -439,6 +443,8 @@ The report will be saved to a file in the `coverage/` folder.
 We don't need to commit the reports since they are generated from the code.
 Therefore, you should append `coverage/` on a new line in the `.gitignore` file.
 
+You can try it out on your own machine by running `npm run test:coverage` command.
+
 ### Change workflow
 
 Wouldn't it be cool if it showed the coverage when reviewing a pull-request for
@@ -448,7 +454,9 @@ We can get the workflow to automatically make a comment with the coverage on
 pull-requests.
 To make it happen we need to add two things.
 First permissions to make the comment.
-Second, we will use the [davelosert/vitest-coverage-report-action]() action to post it.
+Second, we will use the
+[davelosert/vitest-coverage-report-action](https://github.com/davelosert/vitest-coverage-report-action)
+action to post it.
 
 In `.github/workflows/ci.yml`, right after:
 
@@ -511,6 +519,8 @@ The pull-request can't be merged before the CI workflow we build have succeeded.
 
 You can take it one step further and require the pull-request to have been
 approved by other team members or the code owner before it can be merged.
+
+You can try it out by making a random change and push it to the main branch.
 
 ## Closing thoughts
 
