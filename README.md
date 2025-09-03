@@ -76,6 +76,9 @@ git commit -m 'Add ci workflow skeleton'
 git push
 ```
 
+> [!TIP]
+> You can exit `git diff` by pressing "q" on your keyboard.
+
 Head over to the repository on GitHub and go to the "Actions" tab.
 Observe the workflow execute.
 
@@ -182,31 +185,54 @@ Commit and push to see it in action.
 Oh snap, the build is broken.
 
 Create a feature branch and see if you can fix it.
-Here are the Git commands:
+First create a new branch for fixing the build:
 
 ```sh
 git checkout -b fix/build
-# Look closely at the workflow log.
-# Find and fix the error!
-git add -A
-git diff --cached
-# Review your staged changes.
-git commit -m 'Write a helpful commit message'
-git push --set-upstream origin fix/build
-# Make sure you are back on main branch afterwards
-git checkout main
 ```
 
-_NOTE: lines starting with # are comments, not commands._
+Install dependencies with `npm ci` you can test the build using `npm run build`
+command.
+See if you can fix the error.
 
-**Important** Notice the branch name at the end of `git push --set-upstream
-origin fix/build`.
-It should match the name of the branch you are trying to push.
+> [!TIP]
+> error TS6133: 'PostModel' is declared but its value is never read.
+
+When you have the build working on your computer it's time to push the branch
+to the remote repository.
+
+```sh
+# Stage your changes
+git add -A
+# Review your staged changes.
+git diff --cached
+# Now, commit with a helpful message
+git commit -m 'Write a helpful commit message'
+# Push your local branch to the remote repository
+git push --set-upstream origin fix/build
+```
+
+> [!TIP]
+> Lines starting with # are comments, not commands and should be skipped when
+> you type the commands in your terminal.
+
+> [!IMPORTANT]
+> Notice the branch name at the end of `git push --set-upstream origin
+> fix/build`.
+> It should match the name of the branch you are trying to push.
 
 Create then merge a pull-requests from `fix/build` branch.
-Verify that you fixed the build by observing the workflow log.
+
+![Compare & pull request](./docs/compare-pull-request.png)
+
+Verify that you fixed the build by observing that the workflow check passed.
+
+![Build is passing](./docs/build-passed.png)
+
 If not, commit and push another change to same branch.
 You can merge the pull-request once you've fixed the issue.
+
+![Merge pull-request](./docs/merge-pull-request.png)
 
 After the pull-request have been merged, you should do:
 
@@ -215,7 +241,9 @@ git checkout main
 git pull
 ```
 
-To make sure that your local version of main contains the merged changes.
+> [!IMPORTANT]
+> To make sure that your local version of main contains the merged changes
+> before proceeding.
 
 ## 3. Lint
 
@@ -227,88 +255,69 @@ Linters are tools that can analyze source code for potential errors.
 They can also enforce stylistic rules for the source code to make sure the
 coding style is uniform.
 
-### Modify the project
-
-To use eslint, we first need to add it to the project configuration.
-Luckily there is a tool that automates most of it.
-
-In a terminal within your IDE, do:
-
-```sh
-npm init @eslint/config@latest
-```
-
-It will ask you a bunch of questions about your project.
-
-Accept the defaults, **except when asked if the project uses TypeScript**.
-
-Answers/expected output.
-
-```
-> tutorial-react-ci@0.0.0 npx
-> create-config
-
-@eslint/create-config: v1.1.5
-
-✔ How would you like to use ESLint? · problems
-✔ What type of modules does your project use? · esm
-✔ Which framework does your project use? · react
-✔ The React plugin doesn't officially support ESLint v9 yet. What would you like to do? · 9.x
-✔ Does your project use TypeScript? · typescript
-✔ Where does your code run? · browser
-The config that you've selected requires the following dependencies:
-
-eslint@9.x, globals, @eslint/js, typescript-eslint, eslint-plugin-react, @eslint/compat
-✔ Would you like to install them now? · No / Yes
-✔ Which package manager do you want to use? · npm
-☕️Installing...
-```
-
-Unfortunately, there are a couple of small things that need fixing.
-
-In your `package.json` just above `dependencies`, add:
-
-```json
-  "overrides": {
-    "eslint": "^8.57.0"
-  },
-```
-
-Then in the `script` section, change:
-
-```json
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-```
-
-To:
-
-```json
-    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-```
-
-_NOTE above might change when ESLint 9 is fully supported._
+When you create a vite-react project, it already comes preconfigured with eslint.
 
 ## Change workflow
 
-Simply add the following to `ci.yml`:
+Simply add the following to your `ci.yml`:
 
 ```yml
 - name: Lint
   run: npm run lint
 ```
 
-_NOTE: make sure the indentation is correct._
+> [!TIP]
+> Make sure the indentation is correct.
 
-Commit and push!
+> [!NOTE]
+> When we are making changes to our CI workflow, we do this directly in the
+> **main** branch.
+> That is because the workflow is supposed to help us prevent breaking changes
+> on **main**, so we need the checks defined on that branch.
+
+Commit and push your changes to main branch.
+Go to GitHub and look at the output of your workflow.
 
 Oh, no. Another failure.
 Can you fix it?
 
-Create another feature branch with your fix using same procedure as before.
+Create another feature branch for your fix using same procedure as before.
 
-**Important**
+```sh
+git checkout -b fix/lint
+```
 
-Remember to update your local version of main branch when you are done.
+You can run lint checks locally with `npm run lint` command.
+The output should tell how you can fix the issue.
+
+> [!TIP]
+> When you see `7:3  error` it means to look at line 7, 3rd character.
+> Note that white-space also counts as text characters.
+
+When you have fixed the issue, do:
+
+```sh
+# Stage your changes
+git add -A
+# Review your changes
+git diff --cached
+# Commit changes
+git commit -m 'Describe how you fixed linting'
+# Push to remote repository
+git push --set-upstream origin fix/lint
+```
+
+After:
+
+1. Create a pull request on GitHub as before by clicking "Compare &
+pull-request".
+2. Then "Create pull request"
+3. Verify that all checks pass.
+4. Now you can merge by clicking "Merge pull request"
+
+> [!IMPORTANT]
+> Remember to change back to **main** and update your local version of the
+> branch when you are done.
 
 ```sh
 git checkout main
@@ -352,6 +361,8 @@ So, open `src/api.test.ts` and remove the `/*` and `*/`.
 
 Shortcut: <kbd>Ctrl</kbd> + <kbd>a</kbd> then <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>/</kbd>.
 
+Run `npm run test` and you should now see one test passing.
+
 ### Change workflow
 
 Simply add the following to `ci.yml`:
@@ -363,7 +374,7 @@ Simply add the following to `ci.yml`:
 
 _NOTE: make sure the indentation is correct._
 
-Commit and push!
+Stage your changes, commit and push!
 
 ## 5. Test coverage
 
@@ -506,7 +517,8 @@ What are the coverage percentage?
 
 Navigate to the "Settings".
 Click "Rules" then "Rulesets" in the left panel.
-Click the green "New ruleset" button.
+Click the green "New ruleset" button then select "New branch ruleset" from the
+dropdown.
 
 Configure as shown in the screenshot.
 
@@ -520,7 +532,34 @@ The pull-request can't be merged before the CI workflow we build have succeeded.
 You can take it one step further and require the pull-request to have been
 approved by other team members or the code owner before it can be merged.
 
-You can try it out by making a random change and push it to the main branch.
+## Try it out
+
+Let's try out everything together.
+
+Create a new branch:
+
+```sh
+git checkout -b breaking-change
+```
+
+1. Introduce a problem that will make any of CI workflow checks fail.
+    - It could be to outcomment a react component such that it can no longer be
+build.
+2. Commit and push the change.
+3. Create a new pull-request.
+4. Notice that the "Merge pull request" button is disabled.
+5. Fix the change you introduced that made it fail.
+6. Commit and push your new change.
+7. Look at the pull-request on GitHub
+
+![Coverage report and all checks passed](./docs/coverage-checks-passed.png)
+
+We now have a Continuous Integration workflow for the react app that adds
+several checks on any code that goes into the **main** branch.
+The goal is to keep **main** in a working state at all times.
+
+Also notice that the action added "Test coverage" sections results in
+github-actions bot commenting on the pull-request with a coverage report.
 
 ## Closing thoughts
 
